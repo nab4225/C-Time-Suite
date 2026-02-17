@@ -24,5 +24,15 @@ Timer that supports these input formats: SS, MM:SS, and HH:MM:SS.
 - Space: Cancel
 - ESC: Back to Menu
 
-#### This is my first C project. Feedback and Suggestions are welcome!
+## Build (Windows)
+#### This project uses Windows-specific headers ('windows.h', 'conio.h')
 
+### Compile with MSVC
+```bash
+cl time_suite.c
+```
+### Compile with GCC
+```bash
+gcc time_suite.c -o time_suite.exe
+```
+#### This is my first C project. Feedback and Suggestions are welcome!
