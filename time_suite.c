@@ -234,8 +234,6 @@ void runTimer(void){
     bool paused = false;
     long remaining_seconds = 0;
     long long pause_start_ms = 0;
-    long long elapsed_while_paused_ms = 0;
-    long long paused_at_last_tick = 0;
 
     while(1){
         printf("\033[H\033[J");
@@ -335,8 +333,6 @@ void runTimer(void){
                     remaining_seconds = total_seconds;
                     paused = false;
                     pause_start_ms = 0;
-                    elapsed_while_paused_ms = 0;
-                    paused_at_last_tick = 0;
 
                     break;
                 }
@@ -370,10 +366,13 @@ void runTimer(void){
                 }
                 if(key == 'R'){
                     if(paused){
-                        elapsed_while_paused_ms += (GetTickCount64() - pause_start_ms);
+                        /* Resume: adjust last_tick forward by the pause duration */
+                        long long pause_duration = GetTickCount64() - pause_start_ms;
+                        last_tick += pause_duration;
                         paused = false;
                     }
                     else{
+                        /* Pause: record when pause started */
                         pause_start_ms = GetTickCount64();
                         paused = true;
                     }
@@ -383,15 +382,14 @@ void runTimer(void){
             /* Decrement remaining time every second, excluding paused time. */
             if(!paused){
                 long long now = GetTickCount64();
-                long long elapsed = (now - last_tick) - (elapsed_while_paused_ms - paused_at_last_tick);
+                long long elapsed = now - last_tick;
                 if(elapsed >= 1000){
                     int ticks = (int)(elapsed / 1000);
                     remaining_seconds -= ticks;
                     if(remaining_seconds < 0){
                         remaining_seconds = 0;
                     }
-                    last_tick += (long long)ticks * 1000;;
-                    paused_at_last_tick = elapsed_while_paused_ms;
+                    last_tick += (long long)ticks * 1000;
                 }
             }
 
@@ -423,5 +421,4 @@ void runTimer(void){
     printf("\033[H\033[J");
 }
     
-
 
